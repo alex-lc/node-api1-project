@@ -72,15 +72,17 @@ server.put('/api/users/:id', (req, res) => {
     const { id } = req.params;
     const newUser = req.body;
 
-    if (!id) {
-        res.status(404).json({ errorMessage: "The user with the specified ID does not exist." });
-    }
-    else if (!newUser.name || !newUser.bio) {
+    if (!newUser.name || !newUser.bio) {
         res.status(400).json({ errorMessage: "Please provide a name and bio for the user." });
     }
     else {
         Users.update(id, newUser).then(updatedUser => {
-            res.status(200).json(newUser);
+            if (updatedUser) {
+                res.status(200).json(newUser);
+            }
+            else {
+                res.status(404).json({ errorMessage: "The user with the specified ID does not exist." });
+            }
         }).catch(err => {
             console.log(err);
             res.status(500).json({ errorMessage: "The user information could not be modified." });
